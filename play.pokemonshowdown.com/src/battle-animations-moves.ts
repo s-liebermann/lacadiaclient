@@ -35704,6 +35704,23 @@ export const BattleMoveAnims: AnimTable = {
 			}, 'swing');
 		},
 	},
+	icesplinters: {
+		anim(scene, [attacker, defender]) {
+			scene.showEffect('icespike', {
+				x: attacker.x,
+				y: attacker.y,
+				z: attacker.z,
+				scale: 0.1,
+				opacity: 0.5,
+			}, {
+				x: 0,
+				y: defender.y,
+				z: defender.z,
+				scale: 0.5,
+				opacity: 1,
+			}, 'ballistic');
+		},
+	},
 };
 
 // placeholder animations

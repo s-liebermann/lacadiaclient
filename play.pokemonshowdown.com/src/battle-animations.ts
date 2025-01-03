@@ -1350,6 +1350,18 @@ export class BattleScene implements BattleSceneStub {
 			this.$spritesFront[spriteIndex].append(web.$el!);
 			this.sideConditions[siden][id] = [web];
 			break;
+		case 'icesplinters':
+			const icespike = new Sprite(BattleEffects.icespike, {
+				display: 'block',
+				x: x + 15,
+				y: y - 35,
+				z: side.z,
+				opacity: 0.4,
+				scale: 0.7,
+			}, this);
+			this.$spritesFront[spriteIndex].append(icespike.$el!);
+			this.sideConditions[siden][id] = [icespike];
+			break;
 		}
 	}
 	removeSideCondition(siden: number, id: ID) {
@@ -3038,6 +3050,10 @@ const BattleEffects: {[k: string]: SpriteData} = {
 	web: {
 		url: 'web.png', // by Pokemon Showdown user SailorCosmos
 		w: 120, h: 122,
+	},
+	icespike: {
+		url: 'icespike.png',
+		w: 45, h: 45,
 	},
 	leftclaw: {
 		url: 'leftclaw.png',

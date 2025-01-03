@@ -189,10 +189,7 @@ const Dex = new class implements ModdedDex {
 		return `${prefix}//${'play.pokemonshowdown.com'}/`;
 	})();
 
-	fxPrefix = (() => {
-		const protocol = (window.document?.location?.protocol !== 'http:') ? 'https:' : '';
-		return `${protocol}//${'play.pokemonshowdown.com'}/fx/`;
-	})();
+	fxPrefix = 'https://raw.githubusercontent.com/s-liebermann/lacadia-showdown-sprites/master/fx/';
 
 	loadedSpriteData = {xy: 1, bw: 0};
 	moddedDexes: {[mod: string]: ModdedDex} = {};
