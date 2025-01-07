@@ -2679,6 +2679,9 @@ a.ilink.yours {
 .setcell-ability {
 	float: right;
 }
+.setcell-hyper {
+	padding-left: 55px;
+}
 .setcol-details .itemicon {
 	display: block;
 	width: 24px;
@@ -2782,6 +2785,14 @@ a.ilink.yours {
 	font-size: 9pt;
 	text-align: center;
 }
+.setdetails .detailcell-hyper {
+	border-left: 1px solid #CCCCCC;
+	padding: 2px 4px;
+	display: block;
+	float: left;
+	font-size: 7pt;
+	text-align: center;
+}
 .setdetails .detailcell-first {
 	border-left: 0;
 }
@@ -2879,6 +2890,9 @@ a.ilink.yours {
 	margin-right: 0px;
 }
 .setchart .setcell-ability input {
+	margin-left: 0px;
+}
+.setchart .setcell-hyper input {
 	margin-left: 0px;
 }
 .setchart .setcol-moves input {

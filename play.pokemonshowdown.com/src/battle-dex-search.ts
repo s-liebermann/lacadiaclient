@@ -12,7 +12,7 @@
  */
 
 type SearchType = (
-	'pokemon' | 'type' | 'tier' | 'move' | 'item' | 'ability' | 'egggroup' | 'category' | 'article'
+	'pokemon' | 'type' | 'tier' | 'move' | 'item' | 'ability' | 'egggroup' | 'category' | 'article' | 'hyper'
 );
 
 type SearchRow = (
@@ -53,6 +53,7 @@ class DexSearch {
 		egggroup: 7,
 		category: 8,
 		article: 9,
+		hyper: 10,
 	};
 	static typeName = {
 		pokemon: 'Pok&eacute;mon',
@@ -64,6 +65,7 @@ class DexSearch {
 		egggroup: 'Egg group',
 		category: 'Category',
 		article: 'Article',
+		hyper: 'Hyper',
 	};
 	firstPokemonColumn: 'Tier' | 'Number' = 'Number';
 
@@ -97,6 +99,7 @@ class DexSearch {
 		case 'ability': return new BattleAbilitySearch('ability', format, speciesOrSet);
 		case 'type': return new BattleTypeSearch('type', format, speciesOrSet);
 		case 'category': return new BattleCategorySearch('category', format, speciesOrSet);
+		case 'hyper': return new BattleHyperSearch('hyper', format, speciesOrSet);
 		}
 		return null;
 	}
@@ -759,6 +762,8 @@ abstract class BattleTypedSearch<T extends SearchType> {
 			return [this.sortRow!, ...BattleCategorySearch.prototype.getDefaultResults.call(this)];
 		} else if (sortCol === 'ability') {
 			return [this.sortRow!, ...BattleAbilitySearch.prototype.getDefaultResults.call(this)];
+		} else if (sortCol === 'hyper') {
+			return [this.sortRow!, ...BattleHyperSearch.prototype.getDefaultResults.call(this)];
 		}
 
 		if (!this.baseResults) {
@@ -1367,6 +1372,61 @@ class BattleAbilitySearch extends BattleTypedSearch<'ability'> {
 	sort(results: SearchRow[], sortCol: string | null, reverseSort?: boolean): SearchRow[] {
 		throw new Error("invalid sortcol");
 	}
+}
+
+class BattleHyperSearch extends BattleTypedSearch<'hyper'> {
+	getTable() {
+		if (!this.mod) return BattleAbilities;
+		else return {...BattleTeambuilderTable[this.mod].fullAbilityName, ...BattleAbilities};
+		}
+	getDefaultResults(): SearchRow[] {
+		const results: SearchRow[] = [];
+		for (let id in BattleAbilities) {
+			results.push(['ability', id as ID]);
+		}
+		return results;
+	}
+	getBaseResults() {
+		if (!this.species) return this.getDefaultResults();
+		const format = this.format;
+		const isHackmons = (format.includes('hackmons') || format.endsWith('bh'));
+		const isAAA = (format === 'almostanyability' || format.includes('aaa'));
+		const dex = this.dex;
+		let species = dex.species.get(this.species);
+		let abilitySet: SearchRow[] = [['header', "Abilities"]];
+
+		
+		var abilities=[];
+		for(var i in this.getTable()){
+		var ability=dex.abilities.get(i);
+		if(!(ability.shortDesc.includes('(Hyper)')))continue;
+		abilities.push(ability.id);
+	
+		}
+
+		let goodAbilities: SearchRow[] = [['header', "Abilities"]];
+		for (const ability of abilities.sort().map(abil => dex.abilities.get(abil))) {	
+			goodAbilities.push(['hyper', ability.id]);
+		}
+		abilitySet = [...goodAbilities];
+		return abilitySet;
+	}
+	// filter(row: SearchRow, filters: string[][]) {
+	// 	if (!filters) return true;
+	// 	if (row[0] !== 'ability') return true;
+	// 	const ability = this.dex.abilities.get(row[1]);
+	// 	for (const [filterType, value] of filters) {
+	// 		switch (filterType) {
+	// 		case 'pokemon':
+	// 			if (!Dex.hasAbility(this.dex.species.get(value), ability.name)) return false;
+	// 			break;
+	// 		}
+	// 	}
+	// 	return true;
+	// }
+	// sort(results: SearchRow[], sortCol: string | null, reverseSort?: boolean): SearchRow[] {
+	// 	throw new Error("invalid sortcol");
+	// }
 }
 
 class BattleItemSearch extends BattleTypedSearch<'item'> {

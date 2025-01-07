@@ -138,7 +138,7 @@
 			var errorMessage = '';
 			var label;
 			if ((label = this.engine.filterLabel(row[0]))) {
-				errorMessage = '<span class="col filtercol"><em>' + label + '</em></span>';
+				//errorMessage = '<span class="col filtercol"><em>' + label + '</em></span>';
 			} else if ((label = this.engine.illegalLabel(row[1]))) {
 				errorMessage = '<span class="col illegalcol"><em>' + label + '</em></span>';
 			}
@@ -254,6 +254,10 @@
 			var articleTitle = (window.BattleArticleTitles && BattleArticleTitles[id]) || (id[0].toUpperCase() + id.substr(1));
 			var article = {name: articleTitle, id: id};
 			return this.renderArticleRow(article, matchStart, matchLength, errorMessage);
+		case 'hyper':
+			var ability = this.engine.dex.abilities.get(id);
+			return this.renderAbilityRow(ability, matchStart, matchLength, errorMessage, attrs);
+
 		}
 		return 'Error: not found';
 	};

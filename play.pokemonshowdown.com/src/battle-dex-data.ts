@@ -1395,6 +1395,7 @@ interface AbilityFlags {
 	notrace?: 1;
 	/** Disables the Ability if the user is Transformed */
 	notransform?: 1;
+	isHyper?: 1;
 }
 
 class Ability implements Effect {

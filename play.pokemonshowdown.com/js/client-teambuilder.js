@@ -1265,6 +1265,7 @@
 			var isLetsGo = this.curTeam.format.includes('letsgo');
 			var isBDSP = this.curTeam.format.includes('bdsp');
 			var isNatDex = this.curTeam.format.includes('nationaldex') || this.curTeam.format.includes('natdex');
+			var isLacadia = this.curTeam.format == 'gen9lacadia';
 			var buf = '<li value="' + i + '">';
 			if (!set.species || !species) {
 				if (this.deletedSet) {
@@ -1326,8 +1327,11 @@
 						buf += '<span class="detailcell"><label>Gmax</label>' + (set.gigantamax || species.forme === 'Gmax' ? 'Yes' : 'No') + '</span>';
 					}
 				}
-				if (this.curTeam.gen === 9) {
+				if (this.curTeam.gen === 9 && !isLacadia) {
 					buf += '<span class="detailcell"><label>Tera Type</label>' + (species.forceTeraType || set.teraType || species.types[0]) + '</span>';
+				}
+				if (isLacadia) {
+					buf += '<span class="detailcell-hyper"><label>Hyper</label>' + (BattleLog.escapeHTML(set.hyperType)) + '</span>';
 				}
 			}
 			buf += '</button></div></div>';
@@ -2727,6 +2731,7 @@
 			var isBDSP = this.curTeam.format.includes('bdsp');
 			var isNatDex = this.curTeam.format.includes('nationaldex') || this.curTeam.format.includes('natdex');
 			var isHackmons = this.curTeam.format.includes('hackmons') || this.curTeam.format.endsWith('bh');
+			var isLacadia = this.curTeam.format == 'gen9lacadia';
 			var species = this.curTeam.dex.species.get(set.species, undefined, "from updateDetailsForm");
 			if (!set) return;
 			buf += '<div class="resultheader"><h3>Details</h3></div>';
@@ -2800,7 +2805,7 @@
 				buf += '</select></div></div>';
 			}
 
-			if (this.curTeam.gen === 9) {
+			if (this.curTeam.gen === 9 && !isLacadia) {
 				buf += '<div class="formrow"><label class="formlabel" title="Tera Type">Tera Type:</label><div>';
 				if (species.forceTeraType) {
 					buf += species.forceTeraType;
@@ -2814,6 +2819,23 @@
 					buf += '</select>';
 				}
 				buf += '</div></div>';
+			}
+			if (isLacadia) {
+					
+					// buf += '<div class="formrow"><label class="formlabel" title="Hyper">Hyper:</label><div>';
+					// buf += '<select name="hyper" class="button">';
+					// for(var i in this.dex.abilities){
+					// 	var ability = this.dex.abilities.get(i);
+					// 	if(ability.flags['isHyper']) 
+					// 	{
+					// 		buf += '<option value="' + hypers[i].name + '"' + (hyperType === hypers[i].name ? ' selected="selected"' : '') + '>' + hypers[i].name + '</option>';
+					// 	}
+					// }
+					// var hyperType = set.hyperType || 'Pollyanna';
+					// buf += '</select>';
+					buf += '<div class="setcell setcell-hyper"><label>Hyper: </label><input type="text" name="hyper" class="textbox chartinput" value="' + BattleLog.escapeHTML(set.hyperType) + '" autocomplete="off" /></div>'
+				
+				//buf += '</div></div>';
 			}
 
 			buf += '</form>';
@@ -2832,6 +2854,7 @@
 			var isLetsGo = this.curTeam.format.includes('letsgo');
 			var isBDSP = this.curTeam.format.includes('bdsp');
 			var isNatDex = this.curTeam.format.includes('nationaldex') || this.curTeam.format.includes('natdex');
+			var isLacadia = this.curTeam.format == 'gen9lacadia';
 
 			// level
 			var level = parseInt(this.$chart.find('input[name=level]').val(), 10);
@@ -2898,6 +2921,10 @@
 				delete set.teraType;
 			}
 
+			// Hyper type
+			var hyperType = this.$chart.find('input[name=hyper]').val();
+			set.hyperType = hyperType;
+
 			// update details cell
 			var buf = '';
 			var GenderChart = {
@@ -2923,8 +2950,11 @@
 						buf += '<span class="detailcell"><label>Gmax</label>' + (set.gigantamax || species.forme === 'Gmax' ? 'Yes' : 'No') + '</span>';
 					}
 				}
-				if (this.curTeam.gen === 9) {
+				if (this.curTeam.gen === 9 && !isLacadia) {
 					buf += '<span class="detailcell"><label>Tera Type</label>' + (species.forceTeraType || set.teraType || species.types[0]) + '</span>';
+				}
+				if (isLacadia) {
+					buf += '<span class="detailcell-hyper"><label>Hyper</label>' + hyperType + '</span>';
 				}
 			}
 			this.$('button[name=details]').html(buf);
@@ -2955,7 +2985,8 @@
 			move3: 'move',
 			move4: 'move',
 			stats: 'stats',
-			details: 'details'
+			details: 'details',
+			hyper: 'hyper'
 		},
 		chartClick: function (e) {
 			if (this.search.addFilter(e.currentTarget)) {
@@ -3259,8 +3290,12 @@
 					this.$('button.setstats').focus();
 				}
 				break;
+			case 'hyper':
+				this.curSet.hyperType = val;
+				break;
 			}
 			this.save();
+			//TODO: make it so it dynamically updates when hyper is switched
 		},
 		unChooseMove: function (moveName) {
 			var set = this.curSet;
@@ -3435,12 +3470,14 @@
 			if (set.dynamaxLevel) delete set.dynamaxLevel;
 			if (set.gigantamax) delete set.gigantamax;
 			if (set.teraType) delete set.teraType;
+			if (set.hyperType) delete set.hyperType;
 			if (!(this.curTeam.format.includes('hackmons') || this.curTeam.format.endsWith('bh')) && species.requiredItems.length === 1) {
 				set.item = species.requiredItems[0] || '';
 			} else {
 				set.item = '';
 			}
 			set.ability = species.abilities['0'];
+			set.hyperType = '';
 			set.moves = [];
 			set.evs = {};
 			set.ivs = {};

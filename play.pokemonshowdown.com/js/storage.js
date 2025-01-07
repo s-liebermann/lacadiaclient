@@ -867,12 +867,13 @@ Storage.packTeam = function (team) {
 			buf += '|';
 		}
 
-		if (set.pokeball || (set.hpType && !hasHP) || set.gigantamax || (set.dynamaxLevel !== undefined && set.dynamaxLevel !== 10) || set.teraType) {
+		if (set.pokeball || (set.hpType && !hasHP) || set.gigantamax || (set.dynamaxLevel !== undefined && set.dynamaxLevel !== 10) || set.teraType || set.hyperType) {
 			buf += ',' + (set.hpType || '');
 			buf += ',' + toID(set.pokeball);
 			buf += ',' + (set.gigantamax ? 'G' : '');
 			buf += ',' + (set.dynamaxLevel !== undefined && set.dynamaxLevel !== 10 ? set.dynamaxLevel : '');
 			buf += ',' + (set.teraType || '');
+			buf += ',' + toID(set.hyperType);
 		}
 	}
 
@@ -985,9 +986,9 @@ Storage.fastUnpackTeam = function (buf) {
 		j = buf.indexOf(']', i);
 		var misc = undefined;
 		if (j < 0) {
-			if (i < buf.length) misc = buf.substring(i).split(',', 6);
+			if (i < buf.length) misc = buf.substring(i).split(',', 7)
 		} else {
-			if (i !== j) misc = buf.substring(i, j).split(',', 6);
+			if (i !== j) misc = buf.substring(i, j).split(',', 7);
 		}
 		if (misc) {
 			set.happiness = (misc[0] ? Number(misc[0]) : 255);
@@ -996,6 +997,7 @@ Storage.fastUnpackTeam = function (buf) {
 			set.gigantamax = !!misc[3];
 			set.dynamaxLevel = (misc[4] ? Number(misc[4]) : 10);
 			set.teraType = misc[5];
+			set.hyperType = this.abilities.get(misc[6]).name;
 		}
 		if (j < 0) break;
 		i = j + 1;
@@ -1111,9 +1113,9 @@ Storage.unpackTeam = function (buf) {
 		j = buf.indexOf(']', i);
 		var misc = undefined;
 		if (j < 0) {
-			if (i < buf.length) misc = buf.substring(i).split(',', 6);
+			if (i < buf.length) misc = buf.substring(i).split(',', 7);
 		} else {
-			if (i !== j) misc = buf.substring(i, j).split(',', 6);
+			if (i !== j) misc = buf.substring(i, j).split(',', 7);
 		}
 		if (misc) {
 			set.happiness = (misc[0] ? Number(misc[0]) : 255);
@@ -1122,6 +1124,7 @@ Storage.unpackTeam = function (buf) {
 			set.gigantamax = !!misc[3];
 			set.dynamaxLevel = (misc[4] ? Number(misc[4]) : 10);
 			set.teraType = misc[5];
+			set.hyperType = thisDex.abilities.get(misc[6]).name;
 		}
 		if (j < 0) break;
 		i = j + 1;
@@ -1339,7 +1342,10 @@ Storage.importTeam = function (buffer, teams) {
 		} else if (line.substr(0, 11) === 'Tera Type: ') {
 			line = line.substr(11);
 			curSet.teraType = line;
-		} else if (line.substr(0, 15) === 'Dynamax Level: ') {
+		} else if (line.substr(0, 7) === 'Hyper: ') {
+			line = line.substring(7);
+			curSet.hyperType = line;
+		}else if (line.substr(0, 15) === 'Dynamax Level: ') {
 			line = line.substr(15);
 			curSet.dynamaxLevel = +line;
 		} else if (line === 'Gigantamax: Yes') {
@@ -1471,7 +1477,12 @@ Storage.exportTeam = function (team, gen, hidestats) {
 		}
 		if (gen === 9) {
 			var species = Dex.species.get(curSet.species);
-			text += 'Tera Type: ' + (species.forceTeraType || curSet.teraType || species.types[0]) + "  \n";
+			if(window.room.curTeam.mod !== 'lacadia') { 
+				text += 'Tera Type: ' + (species.forceTeraType || curSet.teraType || species.types[0]) + "  \n"
+			}
+			else {
+				text += 'Hyper: ' + (curSet.hyperType || 'Pollyanna') + "  \n"
+			}
 		}
 		if (!hidestats) {
 			var first = true;

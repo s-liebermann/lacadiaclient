@@ -17,7 +17,7 @@ package-lock.json
 
 /play.pokemonshowdown.com/js/server/
 /play.pokemonshowdown.com/js/*.js.map
-/play.pokemonshowdown.com/js/battle*.js
+/play.pokemonshowdown.com/js/battle.js
 /play.pokemonshowdown.com/js/panel*.js
 /play.pokemonshowdown.com/js/replay-embed.js
 /play.pokemonshowdown.com/js/client-main.js
@@ -46,3 +46,16 @@ node_modules
 /replay.pokemonshowdown.com/caches/
 /replay.pokemonshowdown.com/theme/wrapper.inc.php
 /replay.pokemonshowdown.com/ads.txt
+play.pokemonshowdown.com/js/battle-animations-moves.js
+play.pokemonshowdown.com/js/battle-animations.js
+play.pokemonshowdown.com/js/battle-choices.js
+play.pokemonshowdown.com/js/battle-dex-data.js
+play.pokemonshowdown.com/js/battle-dex.js
+play.pokemonshowdown.com/js/battle-log.js
+play.pokemonshowdown.com/js/battle-scene-stub.js
+play.pokemonshowdown.com/js/battle-searchresults.js
+play.pokemonshowdown.com/js/battle-sound.js
+play.pokemonshowdown.com/js/battle-text-parser.js
+play.pokemonshowdown.com/js/battle-tooltips.js
+play.pokemonshowdown.com/js/battledata.js
+play.pokemonshowdown.com/js/battle-dex-search.js
