@@ -91,8 +91,9 @@ export class Pokemon implements PokemonDetails, PokemonHealth {
 	prevItem = '';
 	prevItemEffect = '';
 	terastallized: string | '' = '';
-	teraType = '';
-
+	teraType = ''; 
+	hyper = '';
+    hypered: string | '' = '';
 	boosts: {[stat: string]: number} = {};
 	status: StatusName | 'tox' | '' | '???' = '';
 	statusStage = 0;
@@ -119,6 +120,7 @@ export class Pokemon implements PokemonDetails, PokemonHealth {
 		this.gender = data.gender || 'N';
 		this.ident = data.ident;
 		this.terastallized = data.terastallized || '';
+		this.hypered = data.hypered || '';
 		this.searchid = data.searchid;
 
 		this.sprite = side.battle.scene.addPokemonSprite(this);
@@ -753,6 +755,7 @@ export class Side {
 			poke.item = oldPokemon.item;
 			poke.baseAbility = oldPokemon.baseAbility;
 			poke.teraType = oldPokemon.teraType;
+			poke.hyper = oldPokemon.hyper;
 		}
 
 		if (!poke.ability && poke.baseAbility) poke.ability = poke.baseAbility;
@@ -879,6 +882,12 @@ export class Side {
 				oldpokemon.terastallized = '';
 				oldpokemon.teraType = '';
 			}
+			if (oldpokemon.hypered) {
+				pokemon.hypered = oldpokemon.hypered;
+				pokemon.teraType = oldpokemon.hypered;
+				oldpokemon.hypered = '';
+				oldpokemon.hyper = '';
+			}
 			// we don't know anything about the illusioned pokemon except that it's not fainted
 			// technically we also know its status but only at the end of the turn, not here
 			oldpokemon.fainted = false;
@@ -955,6 +964,7 @@ export class Side {
 		pokemon.fainted = true;
 		pokemon.hp = 0;
 		pokemon.terastallized = '';
+		pokemon.hypered = '';
 		pokemon.details = pokemon.details.replace(/, tera:[a-z]+/i, '');
 		pokemon.searchid = pokemon.searchid.replace(/, tera:[a-z]+/i, '');
 		if (pokemon.side.faintCounter < 100) pokemon.side.faintCounter++;
@@ -977,6 +987,7 @@ export interface PokemonDetails {
 	gender: GenderName | '';
 	ident: string;
 	terastallized: string;
+	hypered: string;
 	searchid: string;
 }
 export interface PokemonHealth {
@@ -1015,6 +1026,8 @@ export interface ServerPokemon extends PokemonDetails, PokemonHealth {
 	teraType: string;
 	/** falsy if the pokemon is not terastallized, otherwise it is the Tera Type of the Pokemon */
 	terastallized: string;
+	hyperType: string;
+	hypered: string;
 }
 
 export class Battle {
@@ -2544,6 +2557,18 @@ export class Battle {
 			poke.terastallized = type;
 			poke.details += `, tera:${type}`;
 			poke.searchid += `, tera:${type}`;
+			this.scene.animTransform(poke, true);
+			this.scene.resetStatbar(poke);
+			this.log(args, kwArgs);
+			break;
+		}
+		case '-hyper': {
+			let poke = this.getPokemon(args[1])!;
+			let hyperType = Dex.abilities.get(args[2]).name;
+			poke.hyper = hyperType;
+			poke.hypered = hyperType;
+			poke.details += `, hyper:${hyperType}`;
+			poke.searchid += `, hyper:${hyperType}`;
 			this.scene.animTransform(poke, true);
 			this.scene.resetStatbar(poke);
 			this.log(args, kwArgs);

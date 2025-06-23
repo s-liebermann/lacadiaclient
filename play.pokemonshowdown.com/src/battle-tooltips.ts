@@ -1552,6 +1552,23 @@ class BattleTooltips {
 			}
 		}
 
+		if (move.id === 'powerscale') {
+			switch (pokemon.getSpeciesForme()) {
+				case 'Yakoyza-Ink':
+					moveType = 'Dark';
+					break;
+				case 'Yakoyza-Oni':
+					moveType = 'Fire';
+					break;
+				case 'Yakoyza-Ryujin':
+					moveType = 'Dragon';
+					break;
+				case 'Yakoyza-Tiger':
+					moveType = 'Fighting';
+					break;
+			}
+		}
+
 		// Other abilities that change the move type.
 		const noTypeOverride = [
 			'judgment', 'multiattack', 'naturalgift', 'revelationdance', 'struggle', 'technoblast', 'terrainpulse', 'weatherball',
@@ -1573,7 +1590,13 @@ class BattleTooltips {
 					if (value.abilityModify(0, 'Galvanize')) moveType = 'Electric';
 					if (value.abilityModify(0, 'Pixilate')) moveType = 'Fairy';
 					if (value.abilityModify(0, 'Refrigerate')) moveType = 'Ice';
+					if (pokemon.ability === 'Schrodinger') moveType = 'Ghost';
 				}
+				else if (moveType === 'Ghost') 
+				{
+					if (pokemon.ability === 'Schrodinger') moveType = 'Normal';
+				}
+				
 				if (value.abilityModify(0, 'Normalize')) moveType = 'Normal';
 			}
 
@@ -2371,6 +2394,7 @@ interface PokemonSet {
 	gigantamax?: boolean;
 	/** Defaults to the primary type */
 	teraType?: string;
+	hyperType?: string;
 }
 
 class BattleStatGuesser {

@@ -317,6 +317,8 @@ class BattleTextParser {
 			effect = effect.slice(5);
 		} else if (effect.startsWith('ability:')) {
 			effect = effect.slice(8);
+		} else if (effect.startsWith('hyper:')) {
+			effect = effect.slice(6);
 		}
 		return toID(effect);
 	}
@@ -327,6 +329,8 @@ class BattleTextParser {
 			effect = effect.slice(5);
 		} else if (effect.startsWith('ability:')) {
 			effect = effect.slice(8);
+		} else if (effect.startsWith('hyper:')) {
+			effect = effect.slice(6);
 		}
 		return effect.trim();
 	}
@@ -375,7 +379,7 @@ class BattleTextParser {
 		case 'done' : case 'turn':
 			return 'break';
 		case 'move' : case 'cant': case 'switch': case 'drag': case 'upkeep': case 'start':
-		case '-mega': case '-candynamax': case '-terastallize':
+		case '-mega': case '-candynamax': case '-terastallize': case '-hyper':
 			return 'major';
 		case 'switchout': case 'faint':
 			return 'preMajor';
@@ -1135,6 +1139,12 @@ class BattleTextParser {
 			let template = this.template(templateId, id);
 			const pokemonName = this.pokemon(pokemon);
 			return template.replace('[POKEMON]', pokemonName).replace('[TYPE]', type);
+		}
+
+		case '-hyper': {
+			const [, pokemon, hyper] = args;
+			const template = this.template('hyper');
+			return template.replace('[POKEMON]', this.pokemon(pokemon)).replace('[HYPER]', hyper);
 		}
 
 		case '-zpower': {
